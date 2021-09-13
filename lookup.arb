@@ -26,17 +26,17 @@ def parse_dns(dns_raw)
   dns_record[:destination] = []
   dns_raw.each do |line|
     next if line.include?("#") or line.strip.empty?
-    records = line.split(',')
-    dns_record[:record_type]<<records[0].strip
-    dns_record[:source]<<records[1].strip
-    dns_record[:destination]<<records[2].strip
+    records = line.split(",")
+    dns_record[:record_type] << records[0].strip
+    dns_record[:source] << records[1].strip
+    dns_record[:destination] << records[2].strip
   end
   dns_record
 end
 
 def resolve(dns_records, lookup_chain, domain)
   address_found = false
-  dns_records[:source].each_with_index do | value, index |
+  dns_records[:source].each_with_index do |value, index|
     if value.strip == domain.strip
       record_type = dns_records[:record_type][index].strip
       address = dns_records[:destination][index].strip
@@ -45,13 +45,13 @@ def resolve(dns_records, lookup_chain, domain)
         return lookup_chain
       elsif record_type.strip == "CNAME"
         resolve(dns_records, lookup_chain, address)
-        return  lookup_chain
+        return lookup_chain
       else
-        lookup_chain = ["Record type "+record_type+" unknown"]
+        lookup_chain = ["Record type " + record_type + " unknown"]
       end
     end
   end
-  lookup_chain = ["Error record not found for "+domain]
+  lookup_chain = ["Error record not found for " + domain]
 end
 
 dns_records = parse_dns(dns_raw)
